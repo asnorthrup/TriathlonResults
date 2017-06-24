@@ -13,6 +13,8 @@ class Entrant
 
   #since result isn't same name as LegResult, must give class name
   embeds_many :results, class_name: "LegResult", order: [:"event.o".asc], after_add: :update_total, after_remove: :update_total
+  #embeds race as raceref of class RaceRef
+  embeds_one :race, class_name: "RaceRef"
 
   #after a result is added or removed (see embeds_many callbacks) the seconds is recalculated for the 
   #entrant. All secs of each result are added up again, so passed in result isn't used.
@@ -22,4 +24,11 @@ class Entrant
   		self.secs = self.secs + r.secs
   	end 
   end
+
+  #custom getter that retuns the results of race.race, first race references the embeded RaceRef and the second
+  #race reference the Race document in the other race collection
+  def the_race
+  	race.race
+  end
+
 end
