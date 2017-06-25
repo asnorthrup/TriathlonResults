@@ -15,7 +15,9 @@ class Entrant
   embeds_many :results, class_name: "LegResult", order: [:"event.o".asc], after_add: :update_total, after_remove: :update_total
   #embeds race as raceref of class RaceRef
   embeds_one :race, class_name: "RaceRef"
-
+  #bi-directional 1:1 embedded polymorphic relationsihp between Entrant and RacerInfo. Racer holds a copye of
+  #this info and will be considered the master copy. Entrant stores a copy for acessing during race result processing.
+  embeds_one :racer, as: :parent, class_name: "RacerInfo"
   #after a result is added or removed (see embeds_many callbacks) the seconds is recalculated for the 
   #entrant. All secs of each result are added up again, so passed in result isn't used.
   def update_total(result)
