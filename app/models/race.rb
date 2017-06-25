@@ -7,6 +7,7 @@ class Race
   field :n, as: :name, type: String
   field :date, as: :date, type: Date
   field :loc, as: :location, type: Address
+  field :next_bib, type: Integer, default: 0
 
   #relationship with events, relationship is polymophic type as parent, default ascending sort based on order field
   embeds_many :events, as: :parent, order: [:order.asc]
@@ -61,6 +62,50 @@ end
     object.send("#{action}=", name)
     self.location=object
   end
+end
+
+#override the getter for next_bit to perform atomic increment of next_bib value in the database
+#and return the result of next_bib. 
+def next_bib
+  #don't use next_bib to access use [:next_bib] as this would be a infinite recursive back into this method
+  self.inc(next_bib:1)
+  self[:next_bib]
+end
+
+#instance method that returns a Placing instance with its name set to name of the age group the racer
+#will be compting in
+def get_group racer
+  if racer && racer.birth_year && racer.gender
+    #determin age as of Jan 1 on year of race; put racer in group rounded down to nearest 10 and up
+    #to nearest9s; masters is 60+
+    quotient=(date.year-racer.birth_year)/10
+    min_age=quotient*10
+    max_age=((quotient+1)*10)-1
+    gender=racer.gender
+    name=min_age >= 60 ? "masters #{gender}" : "#{min_age} to #{max_age} (#{gender})" #text format of groups
+    Placing.demongoize(:name=>name)
+  end
+end
+
+#instance method that creates a new Entrant for the Race for a supplied Racer. Method will update the races and
+#results collection. races will have the next_bib number of a Race document updated and results will have
+#a new Entrant document inserted with information cloned from both Race and Racer
+def create_entrant(racer)
+  #byebug
+  e=Entrant.new
+  #next line not correct
+  e.build_race(self.attributes.symbolize_keys.slice(:_id, :n, :date)) #clone(create new instance) race information within Entrant.race
+  e.build_racer(racer.info.attributes) 
+  e_group = get_group(racer) #determine group for racer
+  e.group=e_group #assign to entrant
+  #create an Entrant result for each Race event
+  events.each {|event| e.send("#{event.name}=", event)}
+  valid=e.validate
+  if valid #if valid, assign new unique bib using atomic increment and save to database
+    e.bib=self.next_bib
+    e.save
+  end
+  return e #return e with error information
 end
 
 end
