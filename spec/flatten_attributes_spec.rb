@@ -54,6 +54,7 @@ describe "Module #3 Summative: Implement Attribute Delegation" do
     it "Racer delegation to custom types like Address is accounted for in model" do
       expect(@r.city).to be_nil
       @r.city="Oakland"
+      byebug
       @r.state="CA" 
       expect(@r.info.residence.city).to eql "Oakland"
       expect(@r.info.residence.state).to eql "CA"

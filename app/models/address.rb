@@ -5,11 +5,13 @@ class Address
 attr_accessor :city, :state, :location
 
 
-def initialize(city, state, location)
+def initialize(city=nil, state=nil, location=nil)
 	@city = city
 	@state = state
 	@location = location
 end
+
+
 
 #Creates db form of instance - marshals the state of the instance into MongoDB format as a Ruby hash.
 def mongoize
@@ -33,7 +35,13 @@ end
 def self.demongoize object
 	#byebug
 	case object
-		when Hash then Address.new(object[:city],object[:state],Point.new(object[:loc][:coordinates][0],object[:loc][:coordinates][1]))
+		#getting error when :loc is nil
+		when Hash then 
+			if object[:loc].nil?
+				Address.new(object[:city],object[:state], nil) #just pass in nils for lat/long
+			else
+				Address.new(object[:city],object[:state],Point.new(object[:loc][:coordinates][0],object[:loc][:coordinates][1]))
+			end
 		when Address then Address #already instance of class
 		else object #when nil
 	end

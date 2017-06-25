@@ -11,6 +11,7 @@ def initialize(lng,lat)
 	@latitude = lat
 end
 
+
 #Creates db form of instance - marshals the state of the instance into MongoDB format as a Ruby hash.
 def mongoize
 	{:type=>"Point", :coordinates=>[@longitude,@latitude]}
