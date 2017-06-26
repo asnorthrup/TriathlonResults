@@ -108,4 +108,10 @@ def create_entrant(racer)
   return e #return e with error information
 end
 
+#class method that returns criteria result representing all upcoming races that the racer has not yet registerd for
+def self.upcoming_available_to racer
+  upcoming_race_ids=racer.races.upcoming.pluck(:race).map {|r| r[:_id]}
+  Race.upcoming.not_in(:_id=> upcoming_race_ids)
+end
+
 end

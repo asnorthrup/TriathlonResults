@@ -21,6 +21,11 @@ class Entrant
   embeds_one :racer, as: :parent, class_name: "RacerInfo", autobuild: true
   #after a result is added or removed (see embeds_many callbacks) the seconds is recalculated for the 
   #entrant. All secs of each result are added up again, so passed in result isn't used.
+  
+  #named scopes for finding chainable criteria for entrants that have not completed and have occured in the past
+  scope :past, ->{where(:"race.date".lt=>Date.current)}
+  scope :upcoming, ->{where(:"race.date".gte=>Date.current)}
+
   def update_total(result)
   	self.secs=0
   	results.each do |r|
