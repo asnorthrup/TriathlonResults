@@ -2,13 +2,21 @@ require File.expand_path('../boot', __FILE__)
 
 #require 'rails/all'
 require "rails"
-require "active_model/railtie"
-require "active_job/railtie"
-require "action_controller/railtie"
-require "action_mailer/railtie"
-require "action_view/railtie"
-require "sprockets/railtie"
-require "rails/test_unit/railtie"
+
+%w(
+  action_controller/railtie
+  action_view/railtie
+  action_mailer/railtie
+  active_job/railtie
+  action_cable/engine
+  rails/test_unit/railtie
+  sprockets/railtie
+).each do |railtie|
+  begin
+    require railtie
+    rescue LoadError
+  end
+end
 
 
 # Require the gems listed in Gemfile, including any gems
