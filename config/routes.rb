@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   resources :racers
   resources :races
+  #add a nested resource to register a Racer for a Race from the racers#edit page. This is the nexted
+  #entries rouces. Functionality will only be to a POST mapped to a create_entry action method within racers
+  #controler
+  resources :racers do
+    post "entries" => "racers#create_entry"
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

@@ -63,6 +63,25 @@ class RacersController < ApplicationController
     end
   end
 
+  #find racer based on params[:racer_id], finds race based on parms[:race_id], uses Race.create_entrant to create an Entrant
+  #redirects the reacer#show page with a status of the registration passed in the flash notice
+  def create_entry
+    @racer=Racer.find(params[:racer_id])
+    @race=Race.find(params[:race_id])
+    @entrant=@race.create_entrant @racer
+
+    #redirect to racer#show saying registration complete
+    respond_to do |format|
+      if @entrant.valid?
+        format.html { redirect_to @racer, notice: 'Race entry was successfully created.' }
+        format.json { render :show, status: :created, location: @racer }
+      else #not a valid entrant
+        format.html { redirect_to @racer, notice: "Invalid registration #{@entrant.errors.messages}" }
+        format.json { render json: @entrant.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_racer
