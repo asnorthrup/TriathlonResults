@@ -138,6 +138,6 @@ test:
 production:
     clients:
         default:
-            uri: <%=ENV['MONGO_URI']
+            uri: <%=ENV['MONGO_URI']%>
             options:
                 connect_timeout: 15
