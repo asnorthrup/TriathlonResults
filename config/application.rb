@@ -1,6 +1,8 @@
 require File.expand_path('../boot', __FILE__)
 
-#require 'rails/all'
+require 'rails/all'
+
+=begin
 require "rails"
 
 %w(
@@ -17,6 +19,7 @@ require "rails"
     rescue LoadError
   end
 end
+=end
 
 
 # Require the gems listed in Gemfile, including any gems
@@ -39,8 +42,11 @@ module Triresults
 
     # bootstraps mongoid within applications -- like rails console
     Mongoid.load!('./config/mongoid.yml')
+    #guarantee the eager_loads_path app/services is detected
+    #director is for non-model and non-controller code
+    config.eager_load_paths += %W( #{config.root}/app/services )
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
-    #config.active_record.raise_in_transactional_callbacks = true
+    config.active_record.raise_in_transactional_callbacks = true
   end
 end

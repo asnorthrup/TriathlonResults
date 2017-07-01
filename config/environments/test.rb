@@ -17,11 +17,14 @@ Rails.application.configure do
   config.static_cache_control = 'public, max-age=3600'
 
   # Show full error reports and disable caching.
-  config.consider_all_requests_local       = true
+  #comment out all requests local so 4XX and 5XX are not treated as failures
+  #config.consider_all_requests_local       = true
+  config.consider_all_requests_local       = false
   config.action_controller.perform_caching = false
 
   # Raise exceptions instead of rendering exception templates.
-  config.action_dispatch.show_exceptions = false
+  #config.action_dispatch.show_exceptions = false
+  config.action_dispatch.show_exceptions = true #4XX and 5XX are passed back
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
