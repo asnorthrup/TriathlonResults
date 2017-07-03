@@ -5,13 +5,19 @@ module Api
 	#from web service clients
 	protect_from_forgery with: :null_session
 	before_action :set_race, only: [:show, :update, :destroy]
+
+	rescue_from ActionController::UnknownFormat do |exception|
+		Rails.logger.debug exception
+		render plain: "woops: we do not support that content-type[#{request.accept}]", status: 415
+	end
+
 	  # GET /api/races
 	  # GET /api/races.json
 	  #collection of races that can handle a query string with pagining parameters
 	  def index
 	    #@racers = Racer.all
 	    if !request.accept || request.accept == "*/*"
-				render plain: "/api/races, offset=[#{params[:offset]}], limit=[#{params[:limit]}]"
+			render plain: "/api/races, offset=[#{params[:offset]}], limit=[#{params[:limit]}]"
 		else
 			#races = Race.all
 			#todo implement
@@ -22,16 +28,20 @@ module Api
 	  # GET /api/races/1.json
 	  #a specific race
 	  def show
-	    #@races=@racer.races
 	    if !request.accept || request.accept == "*/*"
-				render plain: "/api/races/#{params[:id]}"
-		else
-			#real implementation ...
-			#byebug
+			render plain: "/api/races/#{params[:id]}"
+		elsif request.accept == "application/json" || request.accept == "application/xml"
 			if @race
-				render json: @race, status: :ok
-			else
-				render nothing: true, status: :not_found
+	    		render action: :show, status: :ok
+	        else
+	        	render :status=>:not_found,
+						:template=>"api/error_msg",
+						:locals=>{ "msg":"woops: cannot find race[#{params[:id]}]"}
+	        end
+		else
+			respond_to do |format|
+				format.json {render action: :show, status: :ok}
+				format.xml {render action: :show, status: :ok}
 			end
 		end
 	  end

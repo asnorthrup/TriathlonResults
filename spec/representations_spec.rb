@@ -66,6 +66,7 @@ feature "Module #4 Representations", :type => :routing do
       expect(page.status_code).to eql(404)
       expect(page.response_headers["Content-Type"]).to include("application/json")      
       expect(hash = JSON.parse(page.body)).to_not be_nil
+      #byebug
       expect(e_msg = hash["msg"]).to_not be_nil
       expect(e_msg.split()).to include("race[#{bad_id}]")
     end
