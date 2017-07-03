@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   #namespace api for use with api's
   namespace :api do
-    resources :races, only: [:index,:show, :create] do
+    resources :races, only: [:index, :show, :create, :update, :destroy] do
       resources :results, only: [:index,:show]
     end
 

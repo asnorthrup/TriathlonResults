@@ -46,9 +46,10 @@ feature "Module #4 Methods", :type => :routing do
       expect(page.status_code).to eql(200)
       expect(page.response_headers["Content-Type"]).to include("application/json")
       expect(body_data = JSON.parse(page.body)).to_not be_nil
+    
       expect(test_race.name).to eql(body_data["n"]).or eql(body_data["name"])
       expect(test_race.date.to_s).to eql body_data["date"]
-    end    
+    end
   end
 
   context "rq03" do 
