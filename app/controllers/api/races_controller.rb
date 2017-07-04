@@ -19,14 +19,13 @@ module Api
 	    if !request.accept || request.accept == "*/*"
 			render plain: "/api/races, offset=[#{params[:offset]}], limit=[#{params[:limit]}]"
 		else
-			#races = Race.all
 			#todo implement
 		end
 	  end
 
 	  # GET /api/races/1
 	  # GET /api/races/1.json
-	  #a specific race
+	  #a specific race based on the request type accepted
 	  def show
 	    if !request.accept || request.accept == "*/*"
 			render plain: "/api/races/#{params[:id]}"
@@ -39,6 +38,7 @@ module Api
 						:locals=>{ "msg":"woops: cannot find race[#{params[:id]}]"}
 	        end
 		else
+			#note this will go to resque if passed an unknown format
 			respond_to do |format|
 				format.json {render action: :show, status: :ok}
 				format.xml {render action: :show, status: :ok}
@@ -49,26 +49,14 @@ module Api
 
 	  # POST /api/races
 	  # POST /api/races.json
+	  #create a new race
 	  def create
 	  	#byebug
 		if !request.accept || request.accept == "*/*"
 			render plain: "#{params[:race][:name]}", status: :ok
-			#render plain: :nothing, status: :ok
 		else
-			#real implementation
-			#not sure if race needs to be class variable
 		    @race = Race.create(race_params)
-		    #byebug
 		    render plain: "#{@race.name}", status: :created
-		    # respond_to do |format|
-		    #   if @race.save
-		    #     format.html { redirect_to @race, notice: 'Race was successfully created.' }
-		    #     format.json { render :show, status: :created, location: @race }
-		    #   else
-		    #     format.html { render :new }
-		    #     format.json { render json: @race.errors, status: :unprocessable_entity }
-		    #   end
-		    # end
 		end
 	  end
 
@@ -82,18 +70,10 @@ module Api
 	  	else
 			render plain: "woops: cannot find race[#{params[:id]}]", status: :not_found
 		end
-
-	    # respond_to do |format|
-	    #   if @race.update(race_params)
-	    #     format.html { redirect_to @race, notice: 'Race was successfully updated.' }
-	    #     format.json { render :show, status: :ok, location: @race }
-	    #   else
-	    #     format.html { render :edit }
-	    #     format.json { render json: @race.errors, status: :unprocessable_entity }
-	    #   end
-	    # end
 	  end
 
+	  # DELETE /api/races/1
+	  # DELETE /api/races/1.json
 	  def destroy
 	  	if @race
 	  		@race.destroy
@@ -101,11 +81,6 @@ module Api
 	  	else
 			render nothing: true, status: :not_found
 		end
-	    
-	    # respond_to do |format|
-	    #   format.html { redirect_to races_url, notice: 'Race was successfully destroyed.' }
-	    #   format.json { head :no_content }
-	    # end
 	  end
 
 
