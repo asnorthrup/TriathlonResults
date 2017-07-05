@@ -6,11 +6,14 @@ module Api
 		# GET /api/races/:race_id/results
 		# GET /api/races/:race_id/results.json
 		def index
-		  #@racers = Racer.all
+		  #returns entrants of a specified race
 		   if !request.accept || request.accept == "*/*"
 				render plain: "/api/races/#{params[:race_id]}/results"
 			else
-				#real implementation ...
+				@race=Race.find(params[:race_id])
+				@entrants=@race.entrants
+				#pass to index view as locals
+				render action: :index, :locals=>{:race=>@race, :entrants=>@entrants}, status: :ok
 			end
 		end
 
@@ -38,7 +41,7 @@ module Api
 	  	result=params[:result]
 		if result
 			if result[:swim]
-				byebug
+				#byebug
 				entrant.swim=entrant.race.race.swim
 				entrant.swim_secs = result[:swim].to_f
 			end

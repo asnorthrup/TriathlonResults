@@ -22,6 +22,7 @@ class LegResult
   #override the set seconds method such that it calls calc_ave to refresh averages calculated
   #after it manually updates self[:secs] with provided value
   def secs= value
+    #byebug
   	self[:secs]=value
   	calc_ave
   end
