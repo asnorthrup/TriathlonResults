@@ -27,18 +27,19 @@ module Api
 	  # GET /api/races/1.json
 	  #a specific race based on the request type accepted
 	  def show
+	  	#byebug
 	    if !request.accept || request.accept == "*/*"
 			render plain: "/api/races/#{params[:id]}"
 		elsif request.accept == "application/json" || request.accept == "application/xml"
 			if @race
 	    		render action: :show, status: :ok
 	        else
-	        	render :status=>:not_found,
-						:template=>"api/error_msg",
-						:locals=>{ "msg":"woops: cannot find race[#{params[:id]}]"}
+				render :status=>:not_found,
+       					:template=>"api/error_msg",
+       					:locals=>{ :msg=>"woops: cannot find race[#{params[:id]}]"}
 	        end
 		else
-			#note this will go to resque if passed an unknown format
+			#note this will go to rescue if passed an unknown format
 			respond_to do |format|
 				format.json {render action: :show, status: :ok}
 				format.xml {render action: :show, status: :ok}

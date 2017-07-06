@@ -11,9 +11,15 @@ module Api
 				render plain: "/api/races/#{params[:race_id]}/results"
 			else
 				@race=Race.find(params[:race_id])
-				@entrants=@race.entrants
-				#pass to index view as locals
-				render action: :index, :locals=>{:race=>@race, :entrants=>@entrants}, status: :ok
+
+				#headers["Last-Modified"]=@entrants.max(:updated_at)
+				#set the last modified tothe most recently update to any members within the collection, otherwise last modified
+				#would bbe based on the Etag hash of the string of the resulting view
+				if stale?(:last_modified=>@race.entrants.max(:updated_at))
+					@entrants=@race.entrants
+					#pass to index view as locals
+					render action: :index, :locals=>{:race=>@race, :entrants=>@entrants}, status: :ok
+				end
 			end
 		end
 

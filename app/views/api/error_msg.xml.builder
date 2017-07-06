@@ -1,1 +1,3 @@
-xml.msg msg
+xml.error do
+	xml.msg msg
+end
